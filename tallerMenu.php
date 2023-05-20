@@ -46,8 +46,45 @@
         if (isset($_POST["agregarNombre"]) && isset($_POST["agregarValor"])) {
             $nombre = $_POST["agregarNombre"];
             $valor = $_POST["agregarValor"];
-            array_unshift($_SESSION["arrayAsociativo"][$nombre] =  $valor);
+            $arrayAsociativo = $_SESSION["arrayAsociativo"];
+            $nuevoArray = array($nombre => $valor) + $arrayAsociativo;
+            $_SESSION["arrayAsociativo"] = $nuevoArray;
         }
+        if (isset($_POST["finalNombre"]) && isset($_POST["finalValor"])) {
+            $nombre = $_POST["finalNombre"];
+            $valor = $_POST["finalValor"];
+            $_SESSION["arrayAsociativo"][$nombre] = $valor;
+        }
+        if (isset($_POST["atributoUno"]) && isset($_POST["atributoDos"])) {
+            class Objeto {
+                public $atributo1;
+                public $atributo2;
+            
+                public function __construct($atributo1, $atributo2) {
+                    $this->atributo1 = $atributo1;
+                    $this->atributo2 = $atributo2;
+                }
+
+                public function getAtributo1(){
+                    return $this->atributo1;
+                }
+
+                public function getAtributo2(){
+                    return $this->atributo2;
+                }
+            }
+            $atributoUno = $_POST["atributoUno"];
+            $atributoDos = $_POST["atributoDos"];
+            $objeto = new Objeto($atributoUno, $atributoDos);
+            if (isset($_SESSION["arrayObjetos"])) {
+                $arrayObjetos = $_SESSION["arrayObjetos"];
+            } else {
+                $arrayObjetos = array();
+            }
+            $arrayObjetos[] = $objeto;
+            $_SESSION["arrayObjetos"] = serialize($arrayObjetos);
+        }
+/*         echo "Array de objetos: <pre>" . print_r($_SESSION["arrayObjetos"], true) . "</pre>"; */
         switch ($option) {
             case '1':
                 break;
@@ -103,15 +140,60 @@
                 if (isset($_SESSION["arrayAsociativo"]) && !empty($_SESSION["arrayAsociativo"])) {
                     echo " <br>  
                     <form action='tallerMenu.php' method='post'>
-                    <label>Ingrese el nombre de el elemento que desea agregar</label>
+                    <label>Ingrese el nombre de el elemento que desea agregar al inicio</label>
                     <input type='text' name='agregarNombre'><br>
-                    <label>Ingrese el valor de el elemento que desea agregar</label>
+                    <label>Ingrese el valor de el elemento que desea agregar al inicio</label>
                     <input type='text' name='agregarValor'>
                     <input type='submit' value='enviar'>
                     </form>";
 
                 } else {
                     echo "El array asociativo no ha sido creado aún.";
+                }
+                break;
+            case '8':
+                if (isset($_SESSION["arrayAsociativo"]) && !empty($_SESSION["arrayAsociativo"])) {
+                    echo " <br>  
+                    <form action='tallerMenu.php' method='post'>
+                    <label>Ingrese el nombre de el elemento que desea agregar al final</label>
+                    <input type='text' name='finalNombre'><br>
+                    <label>Ingrese el valor de el elemento que desea agregar al final</label>
+                    <input type='text' name='finalValor'>
+                    <input type='submit' value='enviar'>
+                    </form>";
+
+                } else {
+                    echo "El array asociativo no ha sido creado aún.";
+                }
+                break;
+            case '9':
+                echo "
+                <h3>2. Creando Array con objetos</h3>
+                <form action='tallerMenu.php' method='post'>
+                    <label>Ingrese el primer atributo del objeto: <label><br>
+                    <input type='text' name='atributoUno'><br>
+                    <label>Ingrese el segundo atributo del objeto: <label><br>
+                    <input type='text' name='atributoDos'>
+                    <input type='submit' value='enviar'>
+                </form>
+                ";
+                break;
+            case '10':
+                for ($i = 0; $i < count($_SESSION["arrayObjetos"]); $i++) {
+                    $objetoActual = $_SESSION["arrayObjetos"][$i];
+                    $propiedad1 = $objetoActual->getAtributo1;
+                    $propiedad2 = $objetoActual->getAtributo2;
+
+                    echo "Objeto $i - Propiedad 1: $propiedad1, Propiedad 2: $propiedad2";
+                }
+                break;
+            case '11':
+                $arrayObjetos = $_SESSION["arrayObjetos"];
+                foreach ($arrayObjetos as $objeto) {
+                    $atributo1 = $objeto->getAtributo1;
+                    $atributo2 = $objeto->getAtributo2;
+                
+                    echo "Atributo 1: $atributo1, Atributo 2: $atributo2";
                 }
                 break;
             default:
