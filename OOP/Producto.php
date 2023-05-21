@@ -130,4 +130,5 @@ echo $producto4 -> getProveedor(). "<br>";
 echo $producto4 -> getMarca(). "<br>";
 echo $producto4 -> getCategoria(). "<br>";
 echo $producto4 -> getPeso(). "<br>";
+
 ?>
