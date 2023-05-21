@@ -30,9 +30,22 @@
 </body>
 </html>
 <?php
+    class Objeto {
+        public $atributo1;
+        public $atributo2;
+            
+        public function __construct($atributo1, $atributo2) {
+            $this->atributo1 = $atributo1;
+            $this->atributo2 = $atributo2;
+        }
+    }
     session_start();
     if ($_POST) {
-        $option = $_POST["opcion"];
+        if (isset($_POST["opcion"])) {
+            $option = $_POST["opcion"];
+        }else {
+            $option = 0;
+        }
         if (isset($_POST["nombreCamper"]) && isset($_POST["edadCamper"])) {
             $nombre = $_POST["nombreCamper"];
             $edad = $_POST["edadCamper"];
@@ -56,23 +69,6 @@
             $_SESSION["arrayAsociativo"][$nombre] = $valor;
         }
         if (isset($_POST["atributoUno"]) && isset($_POST["atributoDos"])) {
-            class Objeto {
-                public $atributo1;
-                public $atributo2;
-            
-                public function __construct($atributo1, $atributo2) {
-                    $this->atributo1 = $atributo1;
-                    $this->atributo2 = $atributo2;
-                }
-
-                public function getAtributo1(){
-                    return $this->atributo1;
-                }
-
-                public function getAtributo2(){
-                    return $this->atributo2;
-                }
-            }
             $atributoUno = $_POST["atributoUno"];
             $atributoDos = $_POST["atributoDos"];
             $objeto = new Objeto($atributoUno, $atributoDos);
@@ -82,11 +78,20 @@
                 $arrayObjetos = array();
             }
             $arrayObjetos[] = $objeto;
-            $_SESSION["arrayObjetos"] = serialize($arrayObjetos);
+            $_SESSION["arrayObjetos"] = $arrayObjetos;
         }
-/*         echo "Array de objetos: <pre>" . print_r($_SESSION["arrayObjetos"], true) . "</pre>"; */
+        if (isset($_POST["nombreUsuario"])) {
+            $nombreUsuario = $_POST["nombreUsuario"];
+            echo "<br> Bienvenido $nombreUsuario";
+        }
         switch ($option) {
             case '1':
+                echo "    
+                <form action='tallerMenu.php' method='post'>
+                <label for=''>Ingrese su nombre: </label>
+                <input type='text' name='nombreUsuario'>
+                <input type='submit' value='enviar'>
+                </form>";
                 break;
             case '2':
                 echo "
@@ -181,8 +186,8 @@
             case '10':
                 for ($i = 0; $i < count($_SESSION["arrayObjetos"]); $i++) {
                     $objetoActual = $_SESSION["arrayObjetos"][$i];
-                    $propiedad1 = $objetoActual->getAtributo1;
-                    $propiedad2 = $objetoActual->getAtributo2;
+                    $propiedad1 = $objetoActual->atributo1;
+                    $propiedad2 = $objetoActual->atributo2;
 
                     echo "Objeto $i - Propiedad 1: $propiedad1, Propiedad 2: $propiedad2";
                 }
@@ -190,14 +195,25 @@
             case '11':
                 $arrayObjetos = $_SESSION["arrayObjetos"];
                 foreach ($arrayObjetos as $objeto) {
-                    $atributo1 = $objeto->getAtributo1;
-                    $atributo2 = $objeto->getAtributo2;
+                    $atributo1 = $objeto->atributo1;
+                    $atributo2 = $objeto->atributo2;
                 
                     echo "Atributo 1: $atributo1, Atributo 2: $atributo2";
                 }
                 break;
+            case '12':
+                $atributos = array_map(function($objeto) {
+                    return $objeto->atributo1 . ' - ' . $objeto->atributo2;
+                }, $_SESSION["arrayObjetos"]);
+                print_r($atributos);
+                break;
+            case '13':
+                echo "Array de objetos: <pre>" . print_r($_SESSION["arrayObjetos"], true) . "</pre>";
+                break;
             default:
-                # code...
+                if ($option>13) {
+                    echo "Opcion no valida";
+                }
                 break;
         }
     }
